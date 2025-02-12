@@ -5,6 +5,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class UserDao {
 
@@ -15,7 +17,6 @@ public class UserDao {
     }
 
     private final RowMapper<User> userRowMapper = (rs, _) -> new User(
-            rs.getLong("id_user"),
             rs.getString("email"),
             rs.getString("password"),
             rs.getString("role")
@@ -29,14 +30,8 @@ public class UserDao {
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
     }
 
-    public boolean save(User user) {
-        String sql = "INSERT Long `user` (email, password, role) VALUES (?, ?, ?)";
-        int rowsAffected = jdbcTemplate.update(sql, user.getEmail(), user.getPassword(), user.getRole());
-        return rowsAffected > 0;
-    }
-
-    public boolean existsByEmail(String email){
-        String sql = "SELECT COUNT(*) FROM user WHERE email = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, email)>0;
+    public List<User> findAll(){
+        String sql = "SELECT * FROM user";
+        return jdbcTemplate.query(sql, userRowMapper);
     }
 }

@@ -1,28 +1,25 @@
 package com.pecheur_lover.pecheurlover.entities;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public class User {
 
-    private Long id_user;
+    @NotBlank (message = "L'email ne peut pas être vide")
+    @Email
     private String email;
+    @NotBlank(message = "Le mot de passe ne peut pas être vide")
     private String password;
+    @NotBlank(message = "Le rôle ne peut pas être vide")
     private String role;
 
     public User() {
     }
 
-    public User(Long id_user, String email, String password, String role){
-        this.id_user = id_user;
+    public User(String email, String password, String role){
         this.email = email;
         this.password = password;
         this.role = role;
-    }
-
-    public Long getId_user() {
-        return id_user;
-    }
-
-    public void setId_user(Long id_user) {
-        this.id_user = id_user;
     }
 
     public String getEmail() {

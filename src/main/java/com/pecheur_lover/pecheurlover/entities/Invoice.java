@@ -1,21 +1,25 @@
 package com.pecheur_lover.pecheurlover.entities;
 
+import jakarta.validation.constraints.NotBlank;
+
 import java.util.Date;
 
 public class Invoice {
     private Long id_invoice;
-    private Long id_user;
+    private String email;
     private Long id_product;
     private Long quantity;
+    @NotBlank(message = "Le prix total ne peut pas être nul")
     private Long total_price;
+    @NotBlank(message = "La date de la facture ne peut pas être nulle")
     private Date invoice_date;
 
     public Invoice() {
     }
 
-    public Invoice(Long id_invoice, Long id_user, Long id_product, Long quantity, Long total_price, Date invoice_date){
+    public Invoice(Long id_invoice, String email, Long id_product, Long quantity, Long total_price, Date invoice_date){
         this.id_invoice = id_invoice;
-        this.id_user = id_user;
+        this.email = email;
         this.id_product = id_product;
         this.quantity = quantity;
         this.total_price = total_price;
@@ -30,12 +34,12 @@ public class Invoice {
         this.id_invoice = id_invoice;
     }
 
-    public Long getId_user() {
-        return id_user;
+    public String getEmail() {
+        return email;
     }
 
-    public void setId_user(Long id_user) {
-        this.id_user = id_user;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Long getId_product() {

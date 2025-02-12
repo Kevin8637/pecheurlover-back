@@ -3,9 +3,11 @@ package com.pecheur_lover.pecheurlover.daos;
 import com.pecheur_lover.pecheurlover.entities.Product;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public class ProductDao {
     private final JdbcTemplate jdbcTemplate;
 
@@ -16,12 +18,12 @@ public class ProductDao {
     private final RowMapper<Product> productRowMapper = (rs, rowNum) -> new Product(
             rs.getLong("id_product"),
             rs.getString("name"),
-            rs.getString("type"),
+            rs.getString("country"),
             rs.getString("description"),
             rs.getString("imageUrl"),
             rs.getString("cook_tips"),
             rs.getString("vegetables_tips"),
-            rs.getLong("price"),
+            rs.getDouble("price"),
             rs.getLong("stock")
     );
 
@@ -36,8 +38,8 @@ public class ProductDao {
     }
 
     public Product save(Product product) {
-        String sql = "INSERT LongO product (name, type, description, imageUrl, cook_tips, vegetables_tips, price, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, product.getName(), product.getType(), product.getDescription(), product.getImageUrl(), product.getCook_tips(), product.getVegetables_tips(), product.getPrice(), product.getStock());
+        String sql = "INSERT INTO product (name, country, description, imageUrl, cook_tips, vegetables_tips, price, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, product.getName(), product.getCountry(), product.getDescription(), product.getImageUrl(), product.getCook_tips(), product.getVegetables_tips(), product.getPrice(), product.getStock());
 
         String sqlGetId = "SELECT LAST_INSERT_ID()";
         Long id_product = jdbcTemplate.queryForObject(sqlGetId, Long.class);
@@ -50,9 +52,8 @@ public class ProductDao {
         if (!productExists(id_product)) {
             throw new RuntimeException("Produit avec l'ID : " + id_product + " n'existe pas");
         }
-
-        String sql = "UPDATE products SET name = ?, price = ?, type = ?, description = ?, imageUrl = ?, cook_tips = ?, vegetables_tips = ?, stock = ? WHERE id = ?";
-        int rowsAffected = jdbcTemplate.update(sql, product.getName(), product.getPrice(), product.getDescription(), product.getImageUrl(), product.getCook_tips(), product.getVegetables_tips(), product.getStock(), product.getType(), id_product);
+        String sql = "UPDATE product SET name = ?, price = ?, country = ?, description = ?, imageUrl = ?, cook_tips = ?, vegetables_tips = ?, stock = ? WHERE id_product = ?";
+        int rowsAffected = jdbcTemplate.update(sql, product.getName(), product.getPrice(), product.getCountry(), product.getDescription(), product.getImageUrl(), product.getCook_tips(), product.getVegetables_tips(), product.getStock(), id_product);
 
         if (rowsAffected <= 0) {
             throw new RuntimeException("Échec de la mise à jour du produit avec l'ID : " + id_product);
