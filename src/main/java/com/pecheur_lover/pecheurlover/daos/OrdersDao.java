@@ -1,6 +1,7 @@
 package com.pecheur_lover.pecheurlover.daos;
 
 import com.pecheur_lover.pecheurlover.entities.Orders;
+import com.pecheur_lover.pecheurlover.exceptions.ResourceNotFoundException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -17,18 +18,18 @@ public class OrdersDao {
     }
 
     private final RowMapper<Orders> orderRowMapper = (rs, _) -> new Orders(
-            rs.getLong("id_order"),
+            rs.getLong("id_product"),
             rs.getLong("id_invoice"),
-            rs.getString("email"),
-            rs.getLong("total_price")
+            rs.getLong("quantity"),
+            rs.getDouble("price")
     );
 
-    public Orders findById(Long id_order) {
-        String sql = "SELECT * FROM orders WHERE id_order = ?";
-        return jdbcTemplate.query(sql, orderRowMapper, id_order)
+    public Orders findById(Long id_invoice) {
+        String sql = "SELECT * FROM orders WHERE id_invoice = ?";
+        return jdbcTemplate.query(sql, orderRowMapper, id_invoice)
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Commande non trouvée"));
+                .orElseThrow(() -> new ResourceNotFoundException("Commande non trouvée"));
     }
 
     public List<Orders> findAll() {
@@ -37,38 +38,38 @@ public class OrdersDao {
     }
 
     public Orders save(Orders order) {
-        String sql = "INSERT INTO orders (id_invoice, email, total_price) VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql, order.getId_invoice(), order.getEmail(), order.getTotal_price());
+        String sql = "INSERT INTO orders (id_product, quantity, price, id_invoice) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, order.getId_product(), order.getQuantity(), order.getPrice(), order.getId_invoice());
 
         String sqlGetId = "SELECT LAST_INSERT_ID()";
-        Long id_order = jdbcTemplate.queryForObject(sqlGetId, Long.class);
+        Long id_invoice = jdbcTemplate.queryForObject(sqlGetId, Long.class);
 
-        order.setId_order(id_order);
+        order.setId_invoice(id_invoice);
         return order;
     }
 
-    public Orders update(Long id_order, Orders order) {
-        if (!orderExists(id_order)) {
-            throw new RuntimeException("Commande avec l'ID : " + id_order + " n'existe pas");
+    public Orders update(Long id_invoice, Orders order) {
+        if (!orderExists(id_invoice)) {
+            throw new ResourceNotFoundException("Commande avec l'ID : " + id_invoice + " n'existe pas");
         }
 
-        String sql = "UPDATE orders SET id_invoice = ?, email = ?, total_price = ? WHERE id_order = ?";
-        int rowsAffected = jdbcTemplate.update(sql, order.getId_invoice(), order.getEmail(), order.getTotal_price(), id_order);
+        String sql = "UPDATE orders SET id_product = ?, quantity = ?, price = ? WHERE id_invoice = ?";
+        int rowsAffected = jdbcTemplate.update(sql, order.getId_product(), order.getQuantity(), order.getPrice(), id_invoice);
 
         if (rowsAffected <= 0) {
-            throw new RuntimeException("Échec de la mise à jour de la commande avec l'ID : " + id_order);
+            throw new ResourceNotFoundException("Échec de la mise à jour de la commande avec l'ID : " + id_invoice);
         }
         return order;
     }
 
-    public boolean delete(Long id_order) {
-        String sql = "DELETE FROM orders WHERE id_order = ?";
-        int rowsAffected = jdbcTemplate.update(sql, id_order);
+    public boolean delete(Long id_invoice) {
+        String sql = "DELETE FROM orders WHERE id_invoice = ?";
+        int rowsAffected = jdbcTemplate.update(sql, id_invoice);
         return rowsAffected > 0;
     }
 
-    public boolean orderExists(Long id_order) {
-        String sql = "SELECT COUNT(*) FROM orders WHERE id_order = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, id_order) > 0;
+    public boolean orderExists(Long id_invoice) {
+        String sql = "SELECT COUNT(*) FROM orders WHERE id_invoice = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, id_invoice) > 0;
     }
 }

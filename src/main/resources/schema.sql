@@ -19,17 +19,16 @@ CREATE TABLE IF NOT EXISTS product(
 CREATE TABLE IF NOT EXISTS invoice(
     id_invoice INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     email VARCHAR(100) NOT NULL,
-    id_product INT,
-    invoice DATE NOT NULL,
-    total_price DOUBLE NOT NULL,
-    quantity INT NOT NULL,
-    FOREIGN KEY (email) REFERENCES user(email),
-    FOREIGN KEY (id_product) REFERENCES product(id_product)
+    invoice_date DATE NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS orders(
-    id_order INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     id_invoice INT NOT NULL,
-    total_price DOUBLE NOT NULL,
-    FOREIGN KEY (id_invoice) REFERENCES invoice(id_invoice)
+    id_product INT NOT NULL,
+    quantity INT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    PRIMARY KEY (id_invoice, id_product),
+    FOREIGN KEY (id_invoice) REFERENCES invoice(id_invoice),
+    FOREIGN KEY (id_product) REFERENCES product(id_product)
 );

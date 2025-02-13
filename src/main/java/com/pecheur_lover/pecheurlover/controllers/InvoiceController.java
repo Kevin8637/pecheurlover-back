@@ -6,7 +6,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/invoices")
@@ -27,10 +29,25 @@ public class InvoiceController {
         return ResponseEntity.ok(invoiceDao.findById(id_invoice));
     }
 
+    @GetMapping("/email/{email}")
+    public ResponseEntity<Invoice> getInvoiceByEmail(@PathVariable String email){
+        return ResponseEntity.ok(invoiceDao.findByEmail(email));
+    }
+
     @PostMapping("/create")
-    public ResponseEntity<Invoice> createInvoice(@Valid @RequestBody Invoice invoice){
-        Invoice createdInvoice = invoiceDao.save(invoice);
-        return ResponseEntity.ok(createdInvoice);
+    public ResponseEntity<Map<String, Object>> createInvoice(@RequestBody Map<String, Object> request) {
+        String email = (String) request.get("email");
+        Date invoice_date = new Date(); // Utilise la date actuelle
+        double total_price = ((Number) request.get("total_price")).doubleValue();
+
+        int id_invoice = invoiceDao.save(email, invoice_date, total_price);
+
+        return ResponseEntity.ok(Map.of(
+                "id_invoice", id_invoice,
+                "email", email,
+                "invoice_date", invoice_date,
+                "total_price", total_price
+        ));
     }
 
     @PutMapping("/{id_invoice}")

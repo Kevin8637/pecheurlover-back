@@ -1,18 +1,22 @@
 package com.pecheur_lover.pecheurlover.entities;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.w3c.dom.Text;
 
 public class Product {
     private Long id_product;
     @NotBlank(message = "Le nom d'un produit ne peut pas être vide")
     private String name;
+    @NotBlank(message = "Le pays ne peut pas être vide")
     private String country;
     @NotBlank(message = "La description ne peut pas être vide")
     private String description;
+    @NotBlank(message = "L'url de l'image ne peut pas être vide")
     private String imageUrl;
     private String cook_tips;
     private String vegetables_tips;
+    @NotNull(message = "Le prix ne peut pas être nul")
     private Double price;
     private Long stock;
 

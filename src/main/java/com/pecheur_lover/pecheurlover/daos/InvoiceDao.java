@@ -1,10 +1,16 @@
 package com.pecheur_lover.pecheurlover.daos;
 
 import com.pecheur_lover.pecheurlover.entities.Invoice;
+import com.pecheur_lover.pecheurlover.exceptions.ResourceNotFoundException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -18,9 +24,7 @@ public class InvoiceDao {
     private final RowMapper<Invoice> invoiceRowMapper = (rs, _) -> new Invoice(
             rs.getLong("id_invoice"),
             rs.getString("email"),
-            rs.getLong("id_product"),
-            rs.getLong("quantity"),
-            rs.getLong("total_price"),
+            rs.getDouble("total_price"),
             rs.getDate("invoice_date")
     );
 
@@ -29,7 +33,15 @@ public class InvoiceDao {
         return jdbcTemplate.query(sql, invoiceRowMapper, id_invoice)
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Facture non trouvée"));
+                .orElseThrow(() -> new ResourceNotFoundException("Facture non trouvée"));
+    }
+
+    public Invoice findByEmail(String email) {
+        String sql = "SELECT * FROM invoice WHERE email = ?";
+        return jdbcTemplate.query(sql, invoiceRowMapper, email)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Facture non trouvée"));
     }
 
     public List<Invoice> findAll() {
@@ -37,27 +49,32 @@ public class InvoiceDao {
         return jdbcTemplate.query(sql, invoiceRowMapper);
     }
 
-    public Invoice save(Invoice invoice) {
-        String sql = "INSERT INTO invoice (email, id_product, quantity, total_price, invoice_date) VALUES (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, invoice.getEmail(), invoice.getId_product(), invoice.getQuantity(), invoice.getTotal_price(), invoice.getInvoice_date());
+    public int save(String email, Date invoice_date, double total_price) {
+        String sql = "INSERT INTO invoice (email, invoice_date, total_price) VALUES (?, ?, ?)";
 
-        String sqlGetId = "SELECT LAST_INSERT_ID()";
-        Long id_invoice = jdbcTemplate.queryForObject(sqlGetId, Long.class);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        invoice.setId_invoice(id_invoice);
-        return invoice;
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, email);
+            ps.setDate(2, new java.sql.Date(invoice_date.getTime()));
+            ps.setDouble(3, total_price);
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().intValue();
     }
 
     public Invoice update(Long id_invoice, Invoice invoice) {
         if (!invoiceExists(id_invoice)) {
-            throw new RuntimeException("Facture avec l'ID : " + id_invoice + " n'existe pas");
+            throw new ResourceNotFoundException("Facture avec l'ID : " + id_invoice + " n'existe pas");
         }
 
-        String sql = "UPDATE invoice SET email = ?, id_product = ?, quantity = ?, total_price = ?, invoice_date = ? WHERE id_invoice = ?";
-        int rowsAffected = jdbcTemplate.update(sql, invoice.getEmail(), invoice.getId_product(), invoice.getQuantity(), invoice.getTotal_price(), invoice.getInvoice_date(), id_invoice);
+        String sql = "UPDATE invoice SET email = ?, total_price = ?, invoice_date = ? WHERE id_invoice = ?";
+        int rowsAffected = jdbcTemplate.update(sql, invoice.getEmail(), invoice.getTotal_price(), invoice.getInvoice_date(), id_invoice);
 
         if (rowsAffected <= 0) {
-            throw new RuntimeException("Échec de la mise à jour de la facture avec l'ID : " + id_invoice);
+            throw new ResourceNotFoundException("Échec de la mise à jour de la facture avec l'ID : " + id_invoice);
         }
         return invoice;
     }

@@ -1,27 +1,33 @@
 package com.pecheur_lover.pecheurlover.entities;
 
+import jakarta.validation.constraints.NotNull;
+
 public class Orders {
-    private Long id_order;
+    @NotNull (message = "L'id du produit ne peut pas être nul")
+    private Long id_product;
+    @NotNull (message = "L'id de la facture ne peut pas être nul")
     private Long id_invoice;
-    private String email;
-    private Long total_price;
+    @NotNull (message = "La quantité ne peut pas être nulle")
+    private Long quantity;
+    @NotNull (message = "Le prix ne peut pas être nul")
+    private Double price;
 
     public Orders() {
     }
 
-    public Orders(Long id_order, Long id_invoice, String email, Long total_price){
-        this.id_order = id_order;
+    public Orders(Long id_product, Long id_invoice, Long quantity, Double price) {
+        this.id_product = id_product;
         this.id_invoice = id_invoice;
-        this.email = email;
-        this.total_price = total_price;
+        this.quantity = quantity;
+        this.price = price;
     }
 
-    public Long getId_order() {
-        return id_order;
+    public Long getId_product() {
+        return id_product;
     }
 
-    public void setId_order(Long id_order) {
-        this.id_order = id_order;
+    public void setId_product(Long id_product) {
+        this.id_product = id_product;
     }
 
     public Long getId_invoice() {
@@ -32,19 +38,19 @@ public class Orders {
         this.id_invoice = id_invoice;
     }
 
-    public String getEmail() {
-        return email;
+    public Long getQuantity() {
+        return quantity;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setQuantity(Long quantity) {
+        this.quantity = quantity;
     }
 
-    public Long getTotal_price() {
-        return total_price;
+    public Double getPrice() {
+        return price;
     }
 
-    public void setTotal_price(Long total_price) {
-        this.total_price = total_price;
+    public void setPrice(Double price) {
+        this.price = price;
     }
 }

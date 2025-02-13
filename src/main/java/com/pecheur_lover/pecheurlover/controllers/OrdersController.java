@@ -22,26 +22,27 @@ public class OrdersController {
         return ResponseEntity.ok(ordersDao.findAll());
     }
 
-    @GetMapping("/{id_order}")
-    public ResponseEntity<Orders> getOrderById(@PathVariable Long id_order){
-        return ResponseEntity.ok(ordersDao.findById(id_order));
+    @GetMapping("/{id_invoice}")
+    public ResponseEntity<Orders> getOrderById(@PathVariable Long id_invoice){
+        return ResponseEntity.ok(ordersDao.findById(id_invoice));
     }
 
     @PostMapping("/create")
     public ResponseEntity<Orders> createOrder(@Valid @RequestBody Orders orders){
+        System.out.println("Réception de l'ordre : " + orders);
         Orders createdOrders = ordersDao.save(orders);
         return ResponseEntity.ok(createdOrders);
     }
 
-    @PutMapping("/{id_order}")
-    public ResponseEntity<Orders> updateOrder(@PathVariable Long id_order, @RequestBody Orders orders) {
-        Orders updatedOrders = ordersDao.update(id_order, orders);
+    @PutMapping("/{id_invoice}")
+    public ResponseEntity<Orders> updateOrder(@PathVariable Long id_invoice, @RequestBody Orders orders) {
+        Orders updatedOrders = ordersDao.update(id_invoice, orders);
         return ResponseEntity.ok(updatedOrders);
     }
 
-    @DeleteMapping("/{id_order}")
-    public ResponseEntity<Orders> deleteOrder(@PathVariable Long id_order) {
-        if(ordersDao.delete(id_order)){
+    @DeleteMapping("/{id_invoice}")
+    public ResponseEntity<Orders> deleteOrder(@PathVariable Long id_invoice) {
+        if(ordersDao.delete(id_invoice)){
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
