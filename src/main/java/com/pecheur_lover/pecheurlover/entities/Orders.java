@@ -11,15 +11,19 @@ public class Orders {
     private Long quantity;
     @NotNull (message = "Le prix ne peut pas être nul")
     private Double price;
+    private String productName;
+    private String productImage;
 
     public Orders() {
     }
 
-    public Orders(Long id_product, Long id_invoice, Long quantity, Double price) {
+    public Orders(Long id_product, Long id_invoice, Long quantity, Double price, String productName, String productImage) {
         this.id_product = id_product;
         this.id_invoice = id_invoice;
         this.quantity = quantity;
         this.price = price;
+        this.productName = productName;
+        this.productImage = productImage;
     }
 
     public Long getId_product() {
@@ -52,5 +56,21 @@ public class Orders {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getProductImage() {
+        return productImage;
+    }
+
+    public void setProductImage(String productImage) {
+        this.productImage = productImage;
     }
 }

@@ -27,6 +27,12 @@ public class OrdersController {
         return ResponseEntity.ok(ordersDao.findById(id_invoice));
     }
 
+    @GetMapping("/by-invoice/{id_invoice}")
+    public ResponseEntity<List<Orders>> getOrdersByInvoice(@PathVariable int id_invoice) {
+        List<Orders> orders = ordersDao.findOrdersByInvoiceId(id_invoice);
+        return ResponseEntity.ok(orders);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<Orders> createOrder(@Valid @RequestBody Orders orders){
         System.out.println("Réception de l'ordre : " + orders);

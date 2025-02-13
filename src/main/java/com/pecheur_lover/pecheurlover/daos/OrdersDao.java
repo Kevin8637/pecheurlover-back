@@ -21,8 +21,22 @@ public class OrdersDao {
             rs.getLong("id_product"),
             rs.getLong("id_invoice"),
             rs.getLong("quantity"),
-            rs.getDouble("price")
+            rs.getDouble("price"),
+            rs.getString("product_name"),
+            rs.getString("product_image")
     );
+
+
+    public List<Orders> findOrdersByInvoiceId(int id_invoice) {
+        String sql = """
+            SELECT o.id_invoice, o.id_product, o.quantity, o.price, p.name AS product_name, p.imageUrl AS product_image
+            FROM orders o
+            INNER JOIN product p ON o.id_product = p.id_product
+            WHERE o.id_invoice = ?
+        """;
+
+        return jdbcTemplate.query(sql, new Object[]{id_invoice}, orderRowMapper);
+    }
 
     public Orders findById(Long id_invoice) {
         String sql = "SELECT * FROM orders WHERE id_invoice = ?";

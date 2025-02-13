@@ -8,9 +8,7 @@ public class Invoice {
     private Long id_invoice;
     @Email
     private String email;
-    @NotNull(message = "Le prix total ne peut pas être nul")
     private Double total_price;
-    @NotNull(message = "Invoice date must not be null")
     private Date invoice_date;
 
 
