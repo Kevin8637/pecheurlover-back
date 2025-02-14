@@ -30,8 +30,9 @@ public class InvoiceController {
     }
 
     @GetMapping("/email/{email}")
-    public ResponseEntity<Invoice> getInvoiceByEmail(@PathVariable String email){
-        return ResponseEntity.ok(invoiceDao.findByEmail(email));
+    public ResponseEntity<List<Invoice>> getInvoicesByEmail(@PathVariable String email){
+        List<Invoice> invoices = invoiceDao.findByEmail(email);
+        return ResponseEntity.ok(invoices);
     }
 
     @PostMapping("/create")

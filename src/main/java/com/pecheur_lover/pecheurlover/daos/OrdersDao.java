@@ -40,12 +40,8 @@ public class OrdersDao {
         JOIN product p ON o.id_product = p.id_product
         WHERE o.id_invoice = ?
     """;
-
-        List<Orders> orders = jdbcTemplate.query(sql, new Object[]{id_invoice}, orderRowMapper);
-
-        return orders;
+        return jdbcTemplate.query(sql, new Object[]{id_invoice}, orderRowMapper);
     }
-
 
 
     public List<Orders> findOrdersByEmail(String email) {
@@ -71,9 +67,21 @@ public class OrdersDao {
     }
 
     public List<Orders> findAll() {
-        String sql = "SELECT * FROM orders";
-        return jdbcTemplate.query(sql, orderRowMapper);
+        String sql = """
+        SELECT o.id_invoice, o.id_product, o.quantity, o.price, 
+               i.email,
+               p.name AS product_name, p.imageUrl AS product_image,
+               i.invoice_date, i.total_price
+        FROM orders o
+        JOIN invoice i ON o.id_invoice = i.id_invoice
+        JOIN product p ON o.id_product = p.id_product
+    """;
+
+        return jdbcTemplate.query(sql, new Object[]{}, orderRowMapper);
     }
+
+
+
 
     public Orders save(Orders order) {
         String sql = "INSERT INTO orders (id_product, quantity, price, id_invoice) VALUES (?, ?, ?, ?)";

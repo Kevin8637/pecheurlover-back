@@ -68,10 +68,20 @@ public class ProductDao {
     }
 
     public boolean delete(Long id_product) {
+        // Vérifier si le produit existe avant de le supprimer
+        String checkSql = "SELECT COUNT(*) FROM product WHERE id_product = ?";
+        Integer count = jdbcTemplate.queryForObject(checkSql, Integer.class, id_product);
+
+        if (count == null || count == 0) {
+            throw new ResourceNotFoundException("Produit avec l'ID : " + id_product + " n'existe pas");
+        }
+
         String sql = "DELETE FROM product WHERE id_product = ?";
         int rowsAffected = jdbcTemplate.update(sql, id_product);
+
         return rowsAffected > 0;
     }
+
 
     public boolean productExists(Long id_product) {
         String sql = "SELECT COUNT(*) FROM product WHERE id_product = ?";

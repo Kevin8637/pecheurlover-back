@@ -36,13 +36,11 @@ public class InvoiceDao {
                 .orElseThrow(() -> new ResourceNotFoundException("Facture non trouvée"));
     }
 
-    public Invoice findByEmail(String email) {
-        String sql = "SELECT * FROM invoice WHERE email = ?";
-        return jdbcTemplate.query(sql, invoiceRowMapper, email)
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Facture non trouvée"));
+    public List<Invoice> findByEmail(String email) {
+        String sql = "SELECT * FROM invoice WHERE LOWER(email) = LOWER(?)";
+        return jdbcTemplate.query(sql, new Object[]{email}, invoiceRowMapper);
     }
+
 
     public List<Invoice> findAll() {
         String sql = "SELECT * FROM invoice";
