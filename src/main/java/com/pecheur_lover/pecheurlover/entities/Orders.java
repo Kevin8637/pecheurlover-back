@@ -2,6 +2,8 @@ package com.pecheur_lover.pecheurlover.entities;
 
 import jakarta.validation.constraints.NotNull;
 
+import java.util.Date;
+
 public class Orders {
     @NotNull (message = "L'id du produit ne peut pas être nul")
     private Long id_product;
@@ -13,17 +15,21 @@ public class Orders {
     private Double price;
     private String productName;
     private String productImage;
+    private Date invoiceDate;
+    private Double totalPrice;
 
     public Orders() {
     }
 
-    public Orders(Long id_product, Long id_invoice, Long quantity, Double price, String productName, String productImage) {
+    public Orders(Long id_product, Long id_invoice, Long quantity, Double price, String productName, String productImage, Date invoiceDate, Double totalPrice) {
         this.id_product = id_product;
         this.id_invoice = id_invoice;
         this.quantity = quantity;
         this.price = price;
         this.productName = productName;
         this.productImage = productImage;
+        this.invoiceDate = invoiceDate;
+        this.totalPrice = totalPrice;
     }
 
     public Long getId_product() {
@@ -72,5 +78,21 @@ public class Orders {
 
     public void setProductImage(String productImage) {
         this.productImage = productImage;
+    }
+
+    public Date getInvoiceDate() {
+        return invoiceDate;
+    }
+
+    public void setInvoiceDate(Date invoiceDate) {
+        this.invoiceDate = invoiceDate;
+    }
+
+    public Double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }

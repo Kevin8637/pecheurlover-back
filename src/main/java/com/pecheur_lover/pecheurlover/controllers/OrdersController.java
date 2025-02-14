@@ -33,6 +33,12 @@ public class OrdersController {
         return ResponseEntity.ok(orders);
     }
 
+    @GetMapping("/by-email/{email}")
+    public ResponseEntity<List<Orders>> getOrdersByEmail(@PathVariable String email) {
+        List<Orders> orders = ordersDao.findOrdersByEmail(email);
+        return ResponseEntity.ok(orders);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<Orders> createOrder(@Valid @RequestBody Orders orders){
         System.out.println("Réception de l'ordre : " + orders);

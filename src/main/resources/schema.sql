@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS product(
     price DECIMAL(10,2) NOT NULL,
     stock INT NOT NULL,
     imageUrl TEXT NOT NULL,
+    bait VARCHAR(100),
     cook_tips VARCHAR(100),
     vegetables_tips VARCHAR(100)
 );

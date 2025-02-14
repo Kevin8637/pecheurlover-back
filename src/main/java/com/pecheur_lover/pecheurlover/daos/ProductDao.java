@@ -22,6 +22,7 @@ public class ProductDao {
             rs.getString("country"),
             rs.getString("description"),
             rs.getString("imageUrl"),
+            rs.getString("bait"),
             rs.getString("cook_tips"),
             rs.getString("vegetables_tips"),
             rs.getDouble("price"),
@@ -42,8 +43,8 @@ public class ProductDao {
     }
 
     public Product save(Product product) {
-        String sql = "INSERT INTO product (name, country, description, imageUrl, cook_tips, vegetables_tips, price, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, product.getName(), product.getCountry(), product.getDescription(), product.getImageUrl(), product.getCook_tips(), product.getVegetables_tips(), product.getPrice(), product.getStock());
+        String sql = "INSERT INTO product (name, country, description, imageUrl, bait, cook_tips, vegetables_tips, price, stock) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, product.getName(), product.getCountry(), product.getDescription(), product.getImageUrl(), product.getBait(), product.getCook_tips(), product.getVegetables_tips(), product.getPrice(), product.getStock());
 
         String sqlGetId = "SELECT LAST_INSERT_ID()";
         Long id_product = jdbcTemplate.queryForObject(sqlGetId, Long.class);
@@ -56,8 +57,8 @@ public class ProductDao {
         if (!productExists(id_product)) {
             throw new ResourceNotFoundException("Produit avec l'ID : " + id_product + " n'existe pas");
         }
-        String sql = "UPDATE product SET name = ?, price = ?, country = ?, description = ?, imageUrl = ?, cook_tips = ?, vegetables_tips = ?, stock = ? WHERE id_product = ?";
-        int rowsAffected = jdbcTemplate.update(sql, product.getName(), product.getPrice(), product.getCountry(), product.getDescription(), product.getImageUrl(), product.getCook_tips(), product.getVegetables_tips(), product.getStock(), id_product);
+        String sql = "UPDATE product SET name = ?, price = ?, country = ?, description = ?, imageUrl = ?, bait=?, cook_tips = ?, vegetables_tips = ?, stock = ? WHERE id_product = ?";
+        int rowsAffected = jdbcTemplate.update(sql, product.getName(), product.getPrice(), product.getCountry(), product.getDescription(), product.getImageUrl(), product.getBait(), product.getCook_tips(), product.getVegetables_tips(), product.getStock(), id_product);
 
         if (rowsAffected <= 0) {
             throw new ResourceNotFoundException("Échec de la mise à jour du produit avec l'ID : " + id_product);

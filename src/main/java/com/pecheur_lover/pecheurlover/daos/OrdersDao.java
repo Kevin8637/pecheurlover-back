@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -17,25 +18,48 @@ public class OrdersDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Orders> orderRowMapper = (rs, _) -> new Orders(
+    private final RowMapper<Orders> orderRowMapper = (rs, rowNum) -> new Orders(
             rs.getLong("id_product"),
             rs.getLong("id_invoice"),
             rs.getLong("quantity"),
             rs.getDouble("price"),
-            rs.getString("product_name"),
-            rs.getString("product_image")
+            rs.getString("product_name") != null ? rs.getString("product_name") : "Nom inconnu",
+            rs.getString("product_image") != null ? rs.getString("product_image") : "https://via.placeholder.com/100",
+            rs.getDate("invoice_date"),
+            rs.getDouble("total_price")
     );
 
 
     public List<Orders> findOrdersByInvoiceId(int id_invoice) {
         String sql = """
-            SELECT o.id_invoice, o.id_product, o.quantity, o.price, p.name AS product_name, p.imageUrl AS product_image
-            FROM orders o
-            INNER JOIN product p ON o.id_product = p.id_product
-            WHERE o.id_invoice = ?
-        """;
+        SELECT o.id_invoice, o.id_product, o.quantity, o.price, 
+               p.name AS product_name, p.imageUrl AS product_image,
+               i.invoice_date, i.total_price
+        FROM orders o
+        JOIN invoice i ON o.id_invoice = i.id_invoice
+        JOIN product p ON o.id_product = p.id_product
+        WHERE o.id_invoice = ?
+    """;
 
-        return jdbcTemplate.query(sql, new Object[]{id_invoice}, orderRowMapper);
+        List<Orders> orders = jdbcTemplate.query(sql, new Object[]{id_invoice}, orderRowMapper);
+
+        return orders;
+    }
+
+
+
+    public List<Orders> findOrdersByEmail(String email) {
+        String sql = """
+        SELECT o.id_invoice, o.id_product, o.quantity, o.price, 
+               p.name AS product_name, p.imageUrl AS product_image,
+               i.invoice_date, i.total_price
+        FROM orders o
+        JOIN invoice i ON o.id_invoice = i.id_invoice
+        JOIN product p ON o.id_product = p.id_product
+        WHERE LOWER(i.email) = LOWER(?)
+    """;
+
+        return jdbcTemplate.query(sql, new Object[]{email}, orderRowMapper);
     }
 
     public Orders findById(Long id_invoice) {

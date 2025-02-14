@@ -14,6 +14,7 @@ public class Product {
     private String description;
     @NotBlank(message = "L'url de l'image ne peut pas être vide")
     private String imageUrl;
+    private String bait;
     private String cook_tips;
     private String vegetables_tips;
     @NotNull(message = "Le prix ne peut pas être nul")
@@ -22,12 +23,13 @@ public class Product {
 
     public Product(){}
 
-    public Product(Long id_product, String name, String country, String description, String imageUrl, String cook_tips, String vegetables_tips, Double price, Long stock){
+    public Product(Long id_product, String name, String country, String description, String imageUrl, String bait, String cook_tips, String vegetables_tips, Double price, Long stock){
         this.id_product = id_product;
         this.name = name;
         this.country = country;
         this.description = description;
         this.imageUrl = imageUrl;
+        this.bait = bait;
         this.cook_tips = cook_tips;
         this.vegetables_tips = vegetables_tips;
         this.price = price;
@@ -72,6 +74,14 @@ public class Product {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getBait() {
+        return bait;
+    }
+
+    public void setBait(String bait) {
+        this.bait = bait;
     }
 
     public String getCook_tips() {
