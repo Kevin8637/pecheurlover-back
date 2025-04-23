@@ -2,7 +2,6 @@ package com.pecheur_lover.pecheurlover.entities;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.w3c.dom.Text;
 
 public class Product {
     private Long id_product;

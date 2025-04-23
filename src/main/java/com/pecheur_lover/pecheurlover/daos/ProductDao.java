@@ -68,7 +68,6 @@ public class ProductDao {
     }
 
     public boolean delete(Long id_product) {
-        // Vérifier si le produit existe avant de le supprimer
         String checkSql = "SELECT COUNT(*) FROM product WHERE id_product = ?";
         Integer count = jdbcTemplate.queryForObject(checkSql, Integer.class, id_product);
 

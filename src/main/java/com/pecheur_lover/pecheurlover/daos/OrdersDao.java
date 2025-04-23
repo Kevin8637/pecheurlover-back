@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -68,7 +67,7 @@ public class OrdersDao {
 
     public List<Orders> findAll() {
         String sql = """
-        SELECT o.id_invoice, o.id_product, o.quantity, o.price, 
+        SELECT o.id_invoice, o.id_product, o.quantity, o.price,
                i.email,
                p.name AS product_name, p.imageUrl AS product_image,
                i.invoice_date, i.total_price

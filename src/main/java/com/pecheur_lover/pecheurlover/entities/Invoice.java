@@ -1,7 +1,6 @@
 package com.pecheur_lover.pecheurlover.entities;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 
 public class Invoice {

@@ -2,7 +2,6 @@ package com.pecheur_lover.pecheurlover.controllers;
 
 import com.pecheur_lover.pecheurlover.daos.InvoiceDao;
 import com.pecheur_lover.pecheurlover.entities.Invoice;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +37,7 @@ public class InvoiceController {
     @PostMapping("/create")
     public ResponseEntity<Map<String, Object>> createInvoice(@RequestBody Map<String, Object> request) {
         String email = (String) request.get("email");
-        Date invoice_date = new Date(); // Utilise la date actuelle
+        Date invoice_date = new Date();
         double total_price = ((Number) request.get("total_price")).doubleValue();
 
         int id_invoice = invoiceDao.save(email, invoice_date, total_price);
