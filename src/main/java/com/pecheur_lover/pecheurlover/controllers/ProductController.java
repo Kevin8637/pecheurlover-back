@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+// Contrôleur REST pour la gestion des produits
 @RestController
 @RequestMapping("/products")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000") // Autorise les requêtes du front local
 public class ProductController {
+    // Injection du DAO produit et du JdbcTemplate pour les requêtes SQL directes
     private final ProductDao productDao;
     private final JdbcTemplate jdbcTemplate;
 
@@ -23,16 +25,19 @@ public class ProductController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // Récupérer tous les produits
     @GetMapping("/all")
     public ResponseEntity<List<Product>> getAllProducts(){
         return ResponseEntity.ok(productDao.findAll());
     }
 
+    // Récupérer un produit par son identifiant
     @GetMapping("/{id_product}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id_product){
         return ResponseEntity.ok(productDao.findById(id_product));
     }
 
+    // Récupérer le stock d'un produit spécifique (requête SQL directe)
     @GetMapping("/{id_product}/stock")
     public ResponseEntity<Map<String, Object>> getStock(@PathVariable Long id_product) {
         String sql = "SELECT stock FROM product WHERE id_product = ?";
@@ -47,12 +52,14 @@ public class ProductController {
         }
     }
 
+    // Créer un nouveau produit
     @PostMapping("/create")
     public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product){
         Product createdProduct = productDao.save(product);
         return ResponseEntity.ok(createdProduct);
     }
 
+    // Mettre à jour le stock d'un produit (requête SQL directe)
     @PutMapping("/{id_product}/update-stock")
     public ResponseEntity<Map<String, String>> updateStock(@PathVariable Long id_product, @RequestBody Map<String, Integer> body) {
         Integer newStock = body.get("newStock");
@@ -71,12 +78,14 @@ public class ProductController {
         }
     }
 
+    // Mettre à jour les informations d'un produit
     @PutMapping("/{id_product}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id_product, @RequestBody Product product) {
         Product updatedProduct = productDao.update(id_product, product);
         return ResponseEntity.ok(updatedProduct);
     }
 
+    // Supprimer un produit
     @DeleteMapping("/{id_product}")
     public ResponseEntity<Product> deleteProduct(@PathVariable Long id_product) {
         if(productDao.delete(id_product)){

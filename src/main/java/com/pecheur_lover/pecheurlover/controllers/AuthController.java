@@ -16,14 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
+// Contrôleur REST pour la gestion de l'authentification (register/login)
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+    // Injection des dépendances Spring Security et utilitaires
     private final AuthenticationManager authenticationManager;
     private final UserDao userDao;
     private final PasswordEncoder encoder;
     private final JwtUtil jwtUtils;
 
+    // Constructeur pour l'injection des dépendances
     public AuthController(AuthenticationManager authenticationManager, UserDao userDao, PasswordEncoder encoder, JwtUtil jwtUtils) {
         this.authenticationManager = authenticationManager;
         this.userDao = userDao;
@@ -31,33 +34,44 @@ public class AuthController {
         this.jwtUtils = jwtUtils;
     }
 
+    // Endpoint d'enregistrement d'un nouvel utilisateur
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody User user) {
+        // Vérification de l'existence de l'email
         boolean alreadyExists = userDao.existsByEmail(user.getEmail());
         if (alreadyExists) {
             return ResponseEntity.badRequest().body("Error: Email is already in use!");
         }
-    User newUser = new User(
-            user.getEmail(),
-            encoder.encode(user.getPassword()),
-            "USER"
-    );
-    boolean isUserSaved = userDao.save(newUser);
-	        return isUserSaved ? ResponseEntity.ok("User registered successfully!") : ResponseEntity.badRequest().body("Error: User registration failed!");
+
+        // Création et sauvegarde du nouvel utilisateur avec mot de passe hashé
+        User newUser = new User(
+                user.getEmail(),
+                encoder.encode(user.getPassword()), // Hashage du mot de passe
+                "USER" // Attribution du rôle par défaut
+        );
+
+        boolean isUserSaved = userDao.save(newUser);
+        return isUserSaved ?
+                ResponseEntity.ok("User registered successfully!") :
+                ResponseEntity.badRequest().body("Error: User registration failed!");
     }
 
+    // Endpoint de connexion et génération du JWT
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody User user) {
+        // Authentification via Spring Security
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         user.getEmail(),
                         user.getPassword()
                 )
         );
+
+        // Génération du token JWT après authentification réussie
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String token = jwtUtils.generateToken(userDetails.getUsername());
 
+        // Renvoi du token dans la réponse
         return ResponseEntity.ok().body(Map.of("token", token));
     }
-
 }

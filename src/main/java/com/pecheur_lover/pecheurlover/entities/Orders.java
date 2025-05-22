@@ -1,26 +1,43 @@
 package com.pecheur_lover.pecheurlover.entities;
 
 import jakarta.validation.constraints.NotNull;
-
 import java.util.Date;
 
+// Entité représentant une commande (Order) dans l'application
 public class Orders {
-    @NotNull (message = "L'id du produit ne peut pas être nul")
+    // Identifiant du produit commandé (obligatoire)
+    @NotNull(message = "L'id du produit ne peut pas être nul")
     private Long id_product;
-    @NotNull (message = "L'id de la facture ne peut pas être nul")
+
+    // Identifiant de la facture associée à la commande (obligatoire)
+    @NotNull(message = "L'id de la facture ne peut pas être nul")
     private Long id_invoice;
-    @NotNull (message = "La quantité ne peut pas être nulle")
+
+    // Quantité commandée (obligatoire)
+    @NotNull(message = "La quantité ne peut pas être nulle")
     private Long quantity;
-    @NotNull (message = "Le prix ne peut pas être nul")
+
+    // Prix unitaire du produit (obligatoire)
+    @NotNull(message = "Le prix ne peut pas être nul")
     private Double price;
+
+    // Nom du produit (optionnel, utile pour l'affichage)
     private String productName;
+
+    // Image du produit (optionnel, utile pour l'affichage)
     private String productImage;
+
+    // Date de la facture associée (optionnel, pour l'affichage ou l'historique)
     private Date invoiceDate;
+
+    // Prix total de la commande (optionnel, calculé ou récupéré)
     private Double totalPrice;
 
+    // Constructeur par défaut (requis pour la sérialisation/désérialisation)
     public Orders() {
     }
 
+    // Constructeur complet pour initialiser tous les champs
     public Orders(Long id_product, Long id_invoice, Long quantity, Double price, String productName, String productImage, Date invoiceDate, Double totalPrice) {
         this.id_product = id_product;
         this.id_invoice = id_invoice;
@@ -31,6 +48,8 @@ public class Orders {
         this.invoiceDate = invoiceDate;
         this.totalPrice = totalPrice;
     }
+
+    // Getters et setters pour chaque propriété
 
     public Long getId_product() {
         return id_product;

@@ -26,6 +26,7 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    // Injection des dépendances pour le filtre JWT et le service utilisateur personnalisé
     private final JwtFilter jwtFilter;
     private final CustomUserDetailsService userDetailsService;
 
@@ -34,33 +35,36 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
+    // Configuration principale de la sécurité HTTP
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable()) // Désactive CSRF (inutile pour les API stateless)
+                .cors(Customizer.withDefaults()) // Active la configuration CORS personnalisée
                 .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Mode sans session
                 )
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/auth/**", "/test/all").permitAll()
-                                .requestMatchers("/user/**").hasRole("USER")
-                                .requestMatchers("/admin/**").hasRole("ADMIN")
-                                .anyRequest().authenticated()
+                                .requestMatchers("/auth/**", "/test/all").permitAll() // Accès public
+                                .requestMatchers("/user/**").hasRole("USER") // Nécessite le rôle USER
+                                .requestMatchers("/admin/**").hasRole("ADMIN") // Nécessite le rôle ADMIN
+                                .anyRequest().authenticated() // Toutes autres requêtes nécessitent une authentification
                 );
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // Ajout du filtre JWT
         return http.build();
     }
 
+    // Configuration du fournisseur d'authentification
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(new BCryptPasswordEncoder());
+        provider.setUserDetailsService(userDetailsService); // Service personnalisé pour charger les utilisateurs
+        provider.setPasswordEncoder(new BCryptPasswordEncoder()); // Encodeur de mot de passe
         return provider;
     }
 
+    // Exposition du gestionnaire d'authentification
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration
@@ -68,20 +72,22 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+    // Configuration de l'encodeur de mots de passe
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(); // Utilisation de BCrypt pour le hachage
     }
 
+    // Configuration CORS pour les requêtes cross-origin
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000"));
-        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH"));
-        configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000")); // Autorise le front-end React
+        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH")); // Méthodes autorisées
+        configuration.setAllowCredentials(true); // Autorise les cookies/credentials
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type")); // En-têtes autorisés
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", configuration); // Applique à toutes les routes
         return source;
     }
 }

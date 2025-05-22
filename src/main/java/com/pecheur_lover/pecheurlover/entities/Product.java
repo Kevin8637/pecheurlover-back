@@ -3,25 +3,46 @@ package com.pecheur_lover.pecheurlover.entities;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+// Entité représentant un produit dans l'application
 public class Product {
-    private Long id_product;
+    private Long id_product; // Identifiant unique du produit
+
+    // Nom du produit, obligatoire (ne peut pas être vide)
     @NotBlank(message = "Le nom d'un produit ne peut pas être vide")
     private String name;
+
+    // Pays d'origine du produit, obligatoire
     @NotBlank(message = "Le pays ne peut pas être vide")
     private String country;
+
+    // Description du produit, obligatoire
     @NotBlank(message = "La description ne peut pas être vide")
     private String description;
+
+    // URL de l'image du produit, obligatoire
     @NotBlank(message = "L'url de l'image ne peut pas être vide")
     private String imageUrl;
+
+    // Appât recommandé (optionnel)
     private String bait;
+
+    // Conseils de cuisson (optionnel)
     private String cook_tips;
+
+    // Conseils d'accompagnement (optionnel)
     private String vegetables_tips;
+
+    // Prix du produit, obligatoire (ne peut pas être nul)
     @NotNull(message = "Le prix ne peut pas être nul")
     private Double price;
+
+    // Stock disponible (optionnel)
     private Long stock;
 
+    // Constructeur par défaut (requis pour la sérialisation/désérialisation)
     public Product(){}
 
+    // Constructeur complet pour initialiser tous les champs
     public Product(Long id_product, String name, String country, String description, String imageUrl, String bait, String cook_tips, String vegetables_tips, Double price, Long stock){
         this.id_product = id_product;
         this.name = name;
@@ -34,6 +55,8 @@ public class Product {
         this.price = price;
         this.stock = stock;
     }
+
+    // Getters et setters pour chaque propriété
 
     public Long getId_product() {
         return id_product;
