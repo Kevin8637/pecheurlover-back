@@ -33,7 +33,7 @@ public class OrdersDao {
     // Récupère les commandes d'une facture spécifique avec jointure sur product et invoice
     public List<Orders> findOrdersByInvoiceId(int id_invoice) {
         String sql = """
-            SELECT o.id_invoice, o.id_product, o.quantity, o.price, 
+            SELECT o.id_invoice, o.id_product, o.quantity, o.price,
                    p.name AS product_name, p.imageUrl AS product_image,
                    i.invoice_date, i.total_price
             FROM orders o
