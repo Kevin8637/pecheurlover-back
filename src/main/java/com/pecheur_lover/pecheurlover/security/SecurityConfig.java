@@ -46,9 +46,9 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/auth/**", "/test/all").permitAll() // Accès public
+                                .requestMatchers("/auth/**").permitAll() // Accès public
                                 .requestMatchers("/user/**").hasRole("USER") // Nécessite le rôle USER
-                                .requestMatchers("/admin/**").hasRole("ADMIN") // Nécessite le rôle ADMIN
+                                .requestMatchers("invoices/admin/**").hasRole("ADMIN") // Nécessite le rôle ADMIN
                                 .anyRequest().authenticated() // Toutes autres requêtes nécessitent une authentification
                 );
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // Ajout du filtre JWT

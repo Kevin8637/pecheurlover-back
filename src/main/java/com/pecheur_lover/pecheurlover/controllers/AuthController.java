@@ -71,7 +71,10 @@ public class AuthController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String token = jwtUtils.generateToken(userDetails.getUsername());
 
+        // Récupère le rôle de l'utilisateur
+        User dbUSer = userDao.findByEmail(user.getEmail());
+
         // Renvoi du token dans la réponse
-        return ResponseEntity.ok().body(Map.of("token", token));
+        return ResponseEntity.ok().body(Map.of("token", token, "role", dbUSer.getRole()));
     }
 }

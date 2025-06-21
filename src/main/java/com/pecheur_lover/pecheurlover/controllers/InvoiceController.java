@@ -21,7 +21,7 @@ public class InvoiceController {
     }
 
     // Récupérer toutes les factures
-    @GetMapping("/all")
+    @GetMapping("/admin/all")
     public ResponseEntity<List<Invoice>> getAllInvoices(){
         return ResponseEntity.ok(invoiceDao.findAll());
     }
