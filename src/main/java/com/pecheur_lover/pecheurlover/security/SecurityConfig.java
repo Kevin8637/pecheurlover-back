@@ -26,7 +26,6 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // Injection des dépendances pour le filtre JWT et le service utilisateur personnalisé
     private final JwtFilter jwtFilter;
     private final CustomUserDetailsService userDetailsService;
 
@@ -35,36 +34,33 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
-    // Configuration principale de la sécurité HTTP
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Désactive CSRF (inutile pour les API stateless)
-                .cors(Customizer.withDefaults()) // Active la configuration CORS personnalisée
+                .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults())
                 .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Mode sans session
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/auth/**").permitAll() // Accès public
-                                .requestMatchers("/user/**").hasRole("USER") // Nécessite le rôle USER
-                                .requestMatchers("invoices/admin/**").hasRole("ADMIN") // Nécessite le rôle ADMIN
-                                .anyRequest().authenticated() // Toutes autres requêtes nécessitent une authentification
+                                .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/user/**").hasRole("USER")
+                                .requestMatchers("invoices/admin/**").hasRole("ADMIN")
+                                .anyRequest().authenticated()
                 );
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // Ajout du filtre JWT
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
-    // Configuration du fournisseur d'authentification
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService); // Service personnalisé pour charger les utilisateurs
-        provider.setPasswordEncoder(new BCryptPasswordEncoder()); // Encodeur de mot de passe
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(new BCryptPasswordEncoder());
         return provider;
     }
 
-    // Exposition du gestionnaire d'authentification
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration
@@ -72,22 +68,20 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    // Configuration de l'encodeur de mots de passe
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Utilisation de BCrypt pour le hachage
+        return new BCryptPasswordEncoder();
     }
 
-    // Configuration CORS pour les requêtes cross-origin
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000")); // Autorise le front-end React
-        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH")); // Méthodes autorisées
-        configuration.setAllowCredentials(true); // Autorise les cookies/credentials
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type")); // En-têtes autorisés
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH"));
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Applique à toutes les routes
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 }

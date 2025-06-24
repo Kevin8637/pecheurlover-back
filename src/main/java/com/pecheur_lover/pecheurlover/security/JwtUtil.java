@@ -13,49 +13,41 @@ import java.util.Date;
 @Service
 public class JwtUtil {
 
-    // Injection des propriétés depuis application.properties
     @Value("${jwt.secret}")
-    private String jwtSecret; // Clé secrète pour signer les JWT
+    private String jwtSecret;
 
     @Value("${jwt.expiration}")
-    private int jwtExpirationMs; // Durée de validité des tokens en millisecondes
+    private int jwtExpirationMs;
 
-    private SecretKey key; // Clé de chiffrement générée
+    private SecretKey key;
 
-    // Méthode d'initialisation après construction du bean
     @PostConstruct
     public void init() {
-        // Génération de la clé HMAC à partir du secret
         this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    // Génère un token JWT pour un email donné
     public String generateToken(String email) {
         return Jwts.builder()
-                .setSubject(email) // Définit le sujet (identifiant utilisateur)
-                .setIssuedAt(new Date()) // Date de création
-                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs)) // Date d'expiration
-                .signWith(key, SignatureAlgorithm.HS256) // Signature avec algorithme HS256
-                .compact(); // Génère le token sous forme de chaîne
+                .setSubject(email)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
     }
 
-    // Extrait l'email d'un token JWT
     public String getEmailFromToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key).build() // Configure la clé de vérification
-                .parseClaimsJws(token) // Parse le token
+                .setSigningKey(key).build()
+                .parseClaimsJws(token)
                 .getBody()
-                .getSubject(); // Récupère le sujet (email)
+                .getSubject();
     }
 
-    // Valide l'intégrité et la validité d'un token JWT
     public boolean validateJwtToken(String token) {
         try {
-            // Tentative de parsing qui valide automatiquement la signature et l'expiration
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         }
-        // Gestion des différentes erreurs possibles
         catch (SecurityException e) {
             throw new SecurityException("Signature JWT invalide : " + e.getMessage());
         } catch (MalformedJwtException e) {

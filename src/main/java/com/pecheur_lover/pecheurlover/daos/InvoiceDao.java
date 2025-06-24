@@ -13,7 +13,6 @@ import java.sql.Statement;
 import java.util.Date;
 import java.util.List;
 
-// DAO (Data Access Object) pour la gestion des factures (Invoice)
 @Repository
 public class InvoiceDao {
     private final JdbcTemplate jdbcTemplate;
@@ -22,7 +21,6 @@ public class InvoiceDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // Mapper pour convertir les résultats SQL en objets Invoice
     private final RowMapper<Invoice> invoiceRowMapper = (rs, _) -> new Invoice(
             rs.getLong("id_invoice"),
             rs.getString("email"),
@@ -30,7 +28,6 @@ public class InvoiceDao {
             rs.getDate("invoice_date")
     );
 
-    // Récupérer une facture par son identifiant
     public Invoice findById(Long id_invoice) {
         String sql = "SELECT * FROM invoice WHERE id_invoice = ?";
         return jdbcTemplate.query(sql, invoiceRowMapper, id_invoice)
@@ -39,19 +36,16 @@ public class InvoiceDao {
                 .orElseThrow(() -> new ResourceNotFoundException("Facture non trouvée"));
     }
 
-    // Récupérer toutes les factures associées à un email (insensible à la casse)
     public List<Invoice> findByEmail(String email) {
         String sql = "SELECT * FROM invoice WHERE LOWER(email) = LOWER(?)";
         return jdbcTemplate.query(sql, new Object[]{email}, invoiceRowMapper);
     }
 
-    // Récupérer toutes les factures
     public List<Invoice> findAll() {
         String sql = "SELECT * FROM invoice";
         return jdbcTemplate.query(sql, invoiceRowMapper);
     }
 
-    // Sauvegarder une nouvelle facture et retourner son identifiant généré
     public int save(String email, Date invoice_date, double total_price) {
         String sql = "INSERT INTO invoice (email, invoice_date, total_price) VALUES (?, ?, ?)";
 
@@ -68,7 +62,6 @@ public class InvoiceDao {
         return keyHolder.getKey().intValue();
     }
 
-    // Mettre à jour une facture existante
     public Invoice update(Long id_invoice, Invoice invoice) {
         if (!invoiceExists(id_invoice)) {
             throw new ResourceNotFoundException("Facture avec l'ID : " + id_invoice + " n'existe pas");
@@ -83,13 +76,11 @@ public class InvoiceDao {
         return invoice;
     }
 
-    // Supprimer une facture par son identifiant
     public boolean delete(Long id_invoice) {
         String sql = "DELETE FROM invoice WHERE id_invoice = ?";
         return jdbcTemplate.update(sql, id_invoice) > 0;
     }
 
-    // Vérifier l'existence d'une facture par son identifiant
     public boolean invoiceExists(Long id_invoice) {
         String sql = "SELECT COUNT(*) FROM invoice WHERE id_invoice = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, id_invoice) > 0;

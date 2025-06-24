@@ -8,11 +8,9 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
 
-// Classe de configuration pour la source de données (connexion à la base de données)
 @Configuration
 public class DataSourceConfig {
 
-    // Injection des propriétés de configuration de la base de données depuis application.properties
     @Value("${spring.datasource.url}")
     private String url;
 
@@ -25,7 +23,6 @@ public class DataSourceConfig {
     @Value("${spring.datasource.driver-class-name}")
     private String driverClassName;
 
-    // Déclaration du bean DataSource pour gérer la connexion à la base de données
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource driver = new DriverManagerDataSource(
@@ -37,7 +34,6 @@ public class DataSourceConfig {
         return driver;
     }
 
-    // Déclaration du bean JdbcTemplate pour faciliter les opérations SQL avec la base de données
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);

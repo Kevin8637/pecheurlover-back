@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-// DAO pour la gestion des commandes (Orders) avec jointures entre les tables
 @Repository
 public class OrdersDao {
 
@@ -18,7 +17,6 @@ public class OrdersDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // Mapper personnalisé pour convertir les résultats SQL en objets Orders
     private final RowMapper<Orders> orderRowMapper = (rs, rowNum) -> new Orders(
             rs.getLong("id_product"),
             rs.getLong("id_invoice"),
@@ -30,7 +28,6 @@ public class OrdersDao {
             rs.getDouble("total_price")
     );
 
-    // Récupère les commandes d'une facture spécifique avec jointure sur product et invoice
     public List<Orders> findOrdersByInvoiceId(int id_invoice) {
         String sql = """
             SELECT o.id_invoice, o.id_product, o.quantity, o.price,
@@ -44,7 +41,6 @@ public class OrdersDao {
         return jdbcTemplate.query(sql, new Object[]{id_invoice}, orderRowMapper);
     }
 
-    // Récupère l'historique des commandes d'un utilisateur (email) avec jointures
     public List<Orders> findOrdersByEmail(String email) {
         String sql = """
             SELECT o.id_invoice, o.id_product, o.quantity, o.price, 
@@ -58,7 +54,6 @@ public class OrdersDao {
         return jdbcTemplate.query(sql, new Object[]{email}, orderRowMapper);
     }
 
-    // Méthodes CRUD standard avec gestion des exceptions
     public Orders findById(Long id_invoice) {
         String sql = "SELECT * FROM orders WHERE id_invoice = ?";
         return jdbcTemplate.query(sql, orderRowMapper, id_invoice)
@@ -67,7 +62,6 @@ public class OrdersDao {
                 .orElseThrow(() -> new ResourceNotFoundException("Commande non trouvée"));
     }
 
-    // Récupère toutes les commandes avec détails complets (produit + facture)
     public List<Orders> findAll() {
         String sql = """
             SELECT o.id_invoice, o.id_product, o.quantity, o.price,
@@ -81,7 +75,6 @@ public class OrdersDao {
         return jdbcTemplate.query(sql, new Object[]{}, orderRowMapper);
     }
 
-    // Crée une nouvelle commande et récupère l'ID généré
     public Orders save(Orders order) {
         String sql = "INSERT INTO orders (id_product, quantity, price, id_invoice) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, order.getId_product(), order.getQuantity(), order.getPrice(), order.getId_invoice());
@@ -93,7 +86,6 @@ public class OrdersDao {
         return order;
     }
 
-    // Met à jour une commande existante
     public Orders update(Long id_invoice, Orders order) {
         if (!orderExists(id_invoice)) {
             throw new ResourceNotFoundException("Commande avec l'ID : " + id_invoice + " n'existe pas");
@@ -108,14 +100,12 @@ public class OrdersDao {
         return order;
     }
 
-    // Supprime une commande et retourne le statut de l'opération
     public boolean delete(Long id_invoice) {
         String sql = "DELETE FROM orders WHERE id_invoice = ?";
         int rowsAffected = jdbcTemplate.update(sql, id_invoice);
         return rowsAffected > 0;
     }
 
-    // Vérifie l'existence d'une commande
     public boolean orderExists(Long id_invoice) {
         String sql = "SELECT COUNT(*) FROM orders WHERE id_invoice = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, id_invoice) > 0;

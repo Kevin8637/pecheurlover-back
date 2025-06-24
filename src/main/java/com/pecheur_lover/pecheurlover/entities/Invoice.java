@@ -3,30 +3,25 @@ package com.pecheur_lover.pecheurlover.entities;
 import jakarta.validation.constraints.Email;
 import java.util.Date;
 
-// Entité représentant une facture (Invoice) dans l'application
 public class Invoice {
-    private Long id_invoice; // Identifiant unique de la facture
+    private Long id_invoice;
 
     @Email
-    private String email; // Email du client associé à la facture
+    private String email;
 
-    private Double total_price; // Montant total de la facture
+    private Double total_price;
 
-    private Date invoice_date; // Date de création de la facture
+    private Date invoice_date;
 
-    // Constructeur sans argument (requis par certains frameworks)
     public Invoice() {
     }
 
-    // Constructeur complet pour initialiser tous les champs
     public Invoice(Long id_invoice, String email, Double total_price, Date invoice_date){
         this.id_invoice = id_invoice;
         this.email = email;
         this.total_price = total_price;
         this.invoice_date = invoice_date;
     }
-
-    // Getters et setters pour chaque propriété
 
     public Long getId_invoice() {
         return id_invoice;
